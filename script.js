@@ -1,4 +1,27 @@
-localStorage.clear()
+
+(async () => {
+    const { value: pais } = await Swal.fire({
+        icon: 'info',
+        title: 'Bienvenido',
+        text: 'Selecciona tu país',
+        input: 'select',
+        inputPlaceholder: 'País',
+        confirmButtonText: 'Seleccionar',
+        inputOptions: {
+            Argentina: 'Argentina',
+            Uruguay: 'Uruguay',
+            Chile: 'Chile',
+        }
+    });
+
+    if (pais) {
+        swal.fire({
+            title: `Seleccionaste ${pais}`
+        });
+    }
+
+})()
+
 class Perchas {
     constructor(id, material, medida, color, stock, precio, cantidad, descripcion) {
         this.id = id;
@@ -37,7 +60,7 @@ let perchaM3 = new Perchas(3, "Madera", 45, "Blanco", 100, 200, 0, "Percha Impor
 let perchaMadera = [perchaM1, perchaM2, perchaM3]
 function allStorage() {
 
-    var values = [],
+    let values = [],
         keys = Object.keys(localStorage),
         i = keys.length;
 
@@ -67,8 +90,6 @@ for (const percha of perchaMadera) {
         addToCart(percha.id);
     })
 }
-
-let carrito = []
 function openCart() {
 
     updateCart()
@@ -92,7 +113,8 @@ function addToCart(id) {
 function updateCart() {
 
     const contenedorDeLista = document.getElementById('listContainer')
-    let carrito = allStorage()
+    let carrito = localStorage.length > 0 ? allStorage() : [];
+
 
     for (const elemento of carrito) {
         let div = document.createElement('div')
@@ -107,21 +129,52 @@ function updateCart() {
         contenedorDeLista.appendChild(div)
     }
 }
+//updateCart()
 
 const removeFromCart = (id) => {
     let index = perchaMadera.findIndex((elemento) => { return elemento.id === id })
+    Swal.fire({
+        title: '¿Estás seguro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (perchaMadera[index].cantidad > 1) {
+                perchaMadera[index].cantidad--
+                localStorage.setItem(perchaMadera[index].id, perchaMadera[index])
+                let cantidad = document.getElementById(`${id}cantidad`)
+                cantidad.innerHTML = `Cantidad: ${perchaMadera[index].cantidad}`
+            } else {
+                perchaMadera[index].cantidad--
+                localStorage.removeItem(perchaMadera[index].id)
+                document.getElementById(`${id}carrito`).remove();
+            }
+            Swal.fire(
+                'Eliminado',
+                'Eliminaste satisfactoriamente el elemento',
+                'success'
+            )
+        }
+    })
 
-    if (perchaMadera[index].cantidad > 1) {
-        perchaMadera[index].cantidad--
-        localStorage.setItem(perchaMadera[index].id, perchaMadera[index])
-        let cantidad = document.getElementById(`${id}cantidad`)
-        cantidad.innerHTML = `Cantidad: ${perchaMadera[index].cantidad}`
-    } else {
-        perchaMadera[index].cantidad--
-        localStorage.removeItem(perchaMadera[index].id)
-        document.getElementById(`${id}carrito`).remove();
-    }
+    /* if (perchaMadera[index].cantidad > 1) {
+         perchaMadera[index].cantidad--
+         localStorage.setItem(perchaMadera[index].id, perchaMadera[index])
+         let cantidad = document.getElementById(`${id}cantidad`)
+         cantidad.innerHTML = `Cantidad: ${perchaMadera[index].cantidad}`
+     } else {
+         perchaMadera[index].cantidad--
+         localStorage.removeItem(perchaMadera[index].id)
+         document.getElementById(`${id}carrito`).remove();
+ 
+     } */
 }
+
+
 
 function closeCart() {
 
