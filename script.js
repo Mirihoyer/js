@@ -53,11 +53,18 @@ const eliminarPercha = (clave) => { localStorage.removeItem(clave) };
 let wasClosed = false;
 
 
-let perchaM1 = new Perchas(1, "Madera", 45, "Natural", 100, 150, 0, "Percha Importada de color Natural, mide 45 cm")  //asignandole parametros a las variables
-let perchaM2 = new Perchas(2, "Madera", 45, "Chocolate", 100, 180, 0, "Percha Importada de color Chocolate, mide 45 cm")
-let perchaM3 = new Perchas(3, "Madera", 45, "Blanco", 100, 200, 0, "Percha Importada de color Blanco, mide 45 cm")
 
-let perchaMadera = [perchaM1, perchaM2, perchaM3]
+let perchaMadera = []
+fetch("./perchas.json")
+    .then(res => res.json())
+    .then(data => {
+        perchaMadera= data;
+        console.log(perchaMadera)
+        renderPercha();
+    })
+
+
+
 function allStorage() {
 
     let values = [],
@@ -71,10 +78,11 @@ function allStorage() {
     return values;
 }
 
-for (const percha of perchaMadera) {
-    let div = document.createElement(`div`)
-    div.classList.add('col');
-    div.innerHTML = ` 
+function renderPercha() {
+    for (const percha of perchaMadera) {
+        let div = document.createElement(`div`)
+        div.classList.add('col');
+        div.innerHTML = ` 
       <div class="card">
      <img src="./imagenes/Picture1.jpg" class="card-img-top" alt="...">
      <div class="card-body">
@@ -84,12 +92,14 @@ for (const percha of perchaMadera) {
      </div>
    </div>
   `
-    cardContainer.appendChild(div)
-    let botonAgregarCar = document.getElementById(`add=${percha.id}`)
-    botonAgregarCar.addEventListener('click', () => {
-        addToCart(percha.id);
-    })
+        cardContainer.appendChild(div)
+        let botonAgregarCar = document.getElementById(`add=${percha.id}`)
+        botonAgregarCar.addEventListener('click', () => {
+            addToCart(percha.id);
+        })
+    }
 }
+
 function openCart() {
 
     updateCart()
